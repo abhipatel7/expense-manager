@@ -57,7 +57,6 @@ model User {
     image         String?
     accounts      Account[]
     sessions      Session[]
-    deleted       Boolean   @default(false)
 
     userAccounts      UserAccount[]
     budgets           Budget[]
@@ -86,9 +85,9 @@ model UserAccount {
     name        String
     amount      Float
     description String?
-    deleted     Boolean      @default(false)
-    createdAt   DateTime     @default(now())
-    updatedAt   DateTime     @updatedAt
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 
     userId       String
     user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -104,16 +103,16 @@ enum CategoryType {
 }
 
 model Category {
-    id        String       @id @default(cuid())
-    name      String
-    deleted   Boolean      @default(false)
+    id   String @id @default(cuid())
+    name String @unique
+
     createdAt DateTime     @default(now())
     updatedAt DateTime     @updatedAt
     type      CategoryType
 
     subCategories    SubCategory[]
-    userId           String
-    user             User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+    userId           String?
+    user             User?              @relation(fields: [userId], references: [id], onDelete: Cascade)
     recurringExpense RecurringExpense[]
     expenses         Expense[]
     incomes          Income[]
@@ -121,17 +120,16 @@ model Category {
 }
 
 model SubCategory {
-    id        String       @id @default(cuid())
-    name      String
-    deleted   Boolean      @default(false)
-    createdAt DateTime     @default(now())
-    updatedAt DateTime     @updatedAt
-    type      CategoryType
+    id   String @id @default(cuid())
+    name String @unique
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 
     categoryId        String
     category          Category           @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-    userId            String
-    user              User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+    userId            String?
+    user              User?              @relation(fields: [userId], references: [id], onDelete: Cascade)
     recurringExpenses RecurringExpense[]
     expenses          Expense[]
     incomes           Income[]
@@ -146,7 +144,6 @@ model Income {
     updatedAt   DateTime @updatedAt
     description String
     attachment  String[]
-    deleted     Boolean  @default(false)
 
     categoryId    String
     category      Category     @relation(fields: [categoryId], references: [id])
@@ -167,9 +164,9 @@ model RecurringExpense {
     dayOfWeek   DayOfWeek?
     startDate   DateTime
     endDate     DateTime?
-    deleted     Boolean    @default(false)
-    createdAt   DateTime   @default(now())
-    updatedAt   DateTime   @updatedAt
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 
     categoryId    String
     category      Category     @relation(fields: [categoryId], references: [id])
@@ -188,7 +185,6 @@ model Expense {
     updatedAt   DateTime @updatedAt
     description String
     attachment  String[]
-    deleted     Boolean  @default(false)
 
     categoryId         String
     category           Category          @relation(fields: [categoryId], references: [id])
@@ -210,7 +206,6 @@ model Transfer {
     updatedAt   DateTime @updatedAt
     description String
     attachment  String[]
-    deleted     Boolean  @default(false)
 
     userId        String
     user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -247,7 +242,6 @@ model Budget {
     frequency Frequency
     createdAt DateTime  @default(now())
     updatedAt DateTime  @updatedAt
-    deleted   Boolean   @default(false)
 
     categoryId    String
     category      Category     @relation(fields: [categoryId], references: [id])

@@ -21,6 +21,11 @@ const server = z.object({
   // Add `.min(1) on ID and SECRET if you want to make sure they're not empty
   GOOGLE_CLIENT_ID: z.string(),
   GOOGLE_CLIENT_SECRET: z.string(),
+  SENDGRID_API_KEY: z.string(),
+  SENDGRID_HOST: z.string(),
+  SENDGRID_PORT: z.string(),
+  SENDGRID_USERNAME: z.string(),
+  SENDGRID_EMAIL: z.string(),
 });
 
 /**
@@ -44,6 +49,11 @@ const processEnv = {
   NEXTAUTH_URL: process.env.NEXTAUTH_URL,
   GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
   GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
+  SENDGRID_API_KEY: process.env.SENDGRID_API_KEY,
+  SENDGRID_HOST: process.env.SENDGRID_HOST,
+  SENDGRID_PORT: process.env.SENDGRID_PORT,
+  SENDGRID_USERNAME: process.env.SENDGRID_USERNAME,
+  SENDGRID_EMAIL: process.env.SENDGRID_EMAIL,
   // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
 };
 
@@ -56,8 +66,11 @@ const merged = server.merge(client);
 /** @typedef {z.infer<typeof merged>} MergedOutput */
 /** @typedef {z.SafeParseReturnType<MergedInput, MergedOutput>} MergedSafeParseReturn */
 
+// @ts-ignore
+// eslint-disable-next-line import/no-mutable-exports, prefer-destructuring
 let env = /** @type {MergedOutput} */ (process.env);
 
+// eslint-disable-next-line eqeqeq
 if (!!process.env.SKIP_ENV_VALIDATION == false) {
   const isServer = typeof window === 'undefined';
 
