@@ -1,0 +1,15 @@
+*.hbs
+yarn.lock
+.prettierignore
+*.snap
+/.next/
+.yarn/plugins/
+.yarn/releases/
+apps/cli/src/generated/
+apps/cli/scripts/deploy/generated/
+apps/flux/api/scripts/deploy/generated/
+apps/flux/web/src/generated/
+.next
+lib
+dist
+generated
