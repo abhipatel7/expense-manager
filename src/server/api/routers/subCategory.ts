@@ -6,7 +6,18 @@ import {
 } from '@/server/api/trpc';
 
 export const subCategoryRouter = createTRPCRouter({
-  getAll: publicProcedure.query(({ ctx }) => ctx.prisma.subCategory.findMany()),
+  getAll: publicProcedure.query(({ ctx }) =>
+    ctx.prisma.subCategory.findMany({
+      where: {
+        OR: [
+          {
+            userId: null,
+          },
+          { userId: ctx.session?.user.id },
+        ],
+      },
+    })
+  ),
 
   create: protectedProcedure
     .input(
@@ -39,10 +50,12 @@ export const subCategoryRouter = createTRPCRouter({
         },
       });
 
-      return ctx.prisma.subCategory.delete({
+      await ctx.prisma.subCategory.delete({
         where: {
           id: subCategory.id,
         },
       });
+
+      return { success: true };
     }),
 });

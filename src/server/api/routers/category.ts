@@ -8,8 +8,18 @@ import {
 } from '@/server/api/trpc';
 
 export const categoryRouter = createTRPCRouter({
-  getAll: publicProcedure.query(({ ctx }) =>
+  getCategoryByType: publicProcedure.query(({ ctx }) =>
     ctx.prisma.category.findMany({
+      where: {
+        OR: [
+          {
+            userId: {
+              equals: null,
+            },
+          },
+          { userId: ctx.session?.user.id },
+        ],
+      },
       include: {
         subCategories: true,
         _count: {
@@ -52,10 +62,12 @@ export const categoryRouter = createTRPCRouter({
         },
       });
 
-      return ctx.prisma.category.delete({
+      await ctx.prisma.category.delete({
         where: {
           id: category.id,
         },
       });
+
+      return { success: true };
     }),
 });
