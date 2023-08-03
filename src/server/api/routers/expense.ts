@@ -1,14 +1,15 @@
 import { z } from 'zod';
 import { createTRPCRouter, protectedProcedure } from '@/server/api/trpc';
 
-export const incomeRouter = createTRPCRouter({
+export const expenseRouter = createTRPCRouter({
   get: protectedProcedure.query(({ ctx }) =>
-    ctx.prisma.income.findMany({
+    ctx.prisma.expense.findMany({
       where: { userId: ctx.session?.user.id },
       include: {
         category: true,
         subCategory: true,
         userAccount: true,
+        recurringExpense: true,
       },
       orderBy: {
         updatedAt: 'asc',
@@ -26,6 +27,7 @@ export const incomeRouter = createTRPCRouter({
         categoryId: z.string().cuid(),
         subCategoryId: z.string().cuid().optional(),
         userAccountId: z.string().cuid(),
+        recurringExpenseId: z.string().cuid().optional(),
       })
     )
     .mutation(
@@ -38,6 +40,7 @@ export const incomeRouter = createTRPCRouter({
           categoryId,
           userAccountId,
           subCategoryId,
+          recurringExpenseId,
         },
         ctx,
       }) => {
@@ -55,7 +58,13 @@ export const incomeRouter = createTRPCRouter({
           where: { id: userAccountId },
         });
 
-        return ctx.prisma.income.create({
+        if (recurringExpenseId) {
+          await ctx.prisma.recurringExpense.findFirstOrThrow({
+            where: { id: recurringExpenseId },
+          });
+        }
+
+        return ctx.prisma.expense.create({
           data: {
             amount,
             categoryId,
@@ -64,6 +73,7 @@ export const incomeRouter = createTRPCRouter({
             userAccountId,
             subCategoryId,
             attachment,
+            recurringExpenseId,
             userId: ctx.session.user.id,
           },
         });
@@ -81,6 +91,7 @@ export const incomeRouter = createTRPCRouter({
         categoryId: z.string().cuid(),
         subCategoryId: z.string().cuid().optional(),
         userAccountId: z.string().cuid(),
+        recurringExpenseId: z.string().cuid().optional(),
       })
     )
     .mutation(
@@ -94,6 +105,7 @@ export const incomeRouter = createTRPCRouter({
           categoryId,
           userAccountId,
           subCategoryId,
+          recurringExpenseId,
         },
         ctx,
       }) => {
@@ -111,7 +123,13 @@ export const incomeRouter = createTRPCRouter({
           where: { id: userAccountId },
         });
 
-        return ctx.prisma.income.update({
+        if (recurringExpenseId) {
+          await ctx.prisma.recurringExpense.findFirstOrThrow({
+            where: { id: recurringExpenseId },
+          });
+        }
+
+        return ctx.prisma.expense.update({
           where: {
             id,
             userId: ctx.session.user.id,
@@ -123,6 +141,7 @@ export const incomeRouter = createTRPCRouter({
             note,
             userAccountId,
             subCategoryId,
+            recurringExpenseId,
             attachment,
           },
         });
@@ -136,16 +155,16 @@ export const incomeRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ input: { id }, ctx }) => {
-      const income = await ctx.prisma.income.findFirstOrThrow({
+      const expense = await ctx.prisma.expense.findFirstOrThrow({
         where: {
           id,
           userId: ctx.session.user.id,
         },
       });
 
-      await ctx.prisma.income.delete({
+      await ctx.prisma.expense.delete({
         where: {
-          id: income.id,
+          id: expense.id,
         },
       });
 

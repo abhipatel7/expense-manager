@@ -6,7 +6,7 @@ import {
 } from '@/server/api/trpc';
 
 export const subCategoryRouter = createTRPCRouter({
-  getAll: publicProcedure.query(({ ctx }) =>
+  get: publicProcedure.query(({ ctx }) =>
     ctx.prisma.subCategory.findMany({
       where: {
         OR: [

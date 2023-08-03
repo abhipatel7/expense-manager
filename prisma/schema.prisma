@@ -158,7 +158,7 @@ model Income {
 
 model RecurringExpense {
     id          String     @id @default(uuid())
-    description String
+    description String?
     amount      Float
     frequency   Frequency
     dayOfMonth  Int?
@@ -181,10 +181,10 @@ model RecurringExpense {
 model Expense {
     id          String   @id @default(cuid())
     amount      Float
-    note        String
+    note        String?
     createdAt   DateTime @default(now())
     updatedAt   DateTime @updatedAt
-    description String
+    description String?
     attachment  String[]
 
     categoryId         String
@@ -196,7 +196,7 @@ model Expense {
     userId             String
     user               User              @relation(fields: [userId], references: [id], onDelete: Cascade)
     recurringExpenseId String?
-    RecurringExpense   RecurringExpense? @relation(fields: [recurringExpenseId], references: [id])
+    recurringExpense   RecurringExpense? @relation(fields: [recurringExpenseId], references: [id])
 }
 
 model Transfer {

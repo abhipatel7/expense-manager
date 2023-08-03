@@ -3,6 +3,9 @@ import {
   exampleRouter,
   categoryRouter,
   subCategoryRouter,
+  incomeRouter,
+  expenseRouter,
+  userAccountRouter,
 } from '@/server/api/routers';
 
 /**
@@ -14,6 +17,9 @@ export const appRouter = createTRPCRouter({
   example: exampleRouter,
   category: categoryRouter,
   subCategory: subCategoryRouter,
+  income: incomeRouter,
+  expense: expenseRouter,
+  userAccount: userAccountRouter,
 });
 
 // export type definition of API

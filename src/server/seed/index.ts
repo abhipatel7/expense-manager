@@ -15,6 +15,7 @@ async function main() {
       { name: '🍕 Food', type: CategoryType.EXPENSE },
     ],
   });
+
   // Expense Categories & Sub Categories
   await prisma.category.upsert({
     where: { name_type: { name: '🍕 Food', type: CategoryType.EXPENSE } },

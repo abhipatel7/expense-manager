@@ -1,14 +1,15 @@
 import { z } from 'zod';
+import { DayOfWeek, Frequency } from '@prisma/client';
 import { createTRPCRouter, protectedProcedure } from '@/server/api/trpc';
 
-export const incomeRouter = createTRPCRouter({
+export const recurringExpenseRouter = createTRPCRouter({
   get: protectedProcedure.query(({ ctx }) =>
-    ctx.prisma.income.findMany({
+    ctx.prisma.recurringExpense.findMany({
       where: { userId: ctx.session?.user.id },
       include: {
         category: true,
         subCategory: true,
-        userAccount: true,
+        expense: true,
       },
       orderBy: {
         updatedAt: 'asc',
@@ -20,24 +21,28 @@ export const incomeRouter = createTRPCRouter({
     .input(
       z.object({
         amount: z.number(),
-        note: z.string().optional(),
         description: z.string().optional(),
-        attachment: z.string().array().optional(),
         categoryId: z.string().cuid(),
         subCategoryId: z.string().cuid().optional(),
-        userAccountId: z.string().cuid(),
+        startDate: z.date(),
+        endDate: z.date().optional(),
+        dayOfWeek: z.nativeEnum(DayOfWeek).optional(),
+        dayOfMonth: z.number().optional(),
+        frequency: z.nativeEnum(Frequency),
       })
     )
     .mutation(
       async ({
         input: {
           amount,
-          attachment,
           description,
-          note,
           categoryId,
-          userAccountId,
           subCategoryId,
+          frequency,
+          startDate,
+          dayOfMonth,
+          dayOfWeek,
+          endDate,
         },
         ctx,
       }) => {
@@ -51,19 +56,17 @@ export const incomeRouter = createTRPCRouter({
           });
         }
 
-        await ctx.prisma.userAccount.findFirstOrThrow({
-          where: { id: userAccountId },
-        });
-
-        return ctx.prisma.income.create({
+        return ctx.prisma.recurringExpense.create({
           data: {
             amount,
             categoryId,
-            description,
-            note,
-            userAccountId,
             subCategoryId,
-            attachment,
+            description,
+            frequency,
+            startDate,
+            endDate,
+            dayOfMonth,
+            dayOfWeek,
             userId: ctx.session.user.id,
           },
         });
@@ -75,12 +78,14 @@ export const incomeRouter = createTRPCRouter({
       z.object({
         id: z.string().cuid(),
         amount: z.number(),
-        note: z.string().optional(),
         description: z.string().optional(),
-        attachment: z.string().array().optional(),
         categoryId: z.string().cuid(),
         subCategoryId: z.string().cuid().optional(),
-        userAccountId: z.string().cuid(),
+        startDate: z.date(),
+        endDate: z.date().optional(),
+        dayOfWeek: z.nativeEnum(DayOfWeek).optional(),
+        dayOfMonth: z.number().optional(),
+        frequency: z.nativeEnum(Frequency),
       })
     )
     .mutation(
@@ -88,11 +93,13 @@ export const incomeRouter = createTRPCRouter({
         input: {
           id,
           amount,
-          attachment,
-          description,
-          note,
           categoryId,
-          userAccountId,
+          frequency,
+          startDate,
+          dayOfMonth,
+          dayOfWeek,
+          description,
+          endDate,
           subCategoryId,
         },
         ctx,
@@ -107,11 +114,7 @@ export const incomeRouter = createTRPCRouter({
           });
         }
 
-        await ctx.prisma.userAccount.findFirstOrThrow({
-          where: { id: userAccountId },
-        });
-
-        return ctx.prisma.income.update({
+        return ctx.prisma.recurringExpense.update({
           where: {
             id,
             userId: ctx.session.user.id,
@@ -119,11 +122,13 @@ export const incomeRouter = createTRPCRouter({
           data: {
             amount,
             categoryId,
-            description,
-            note,
-            userAccountId,
             subCategoryId,
-            attachment,
+            description,
+            frequency,
+            startDate,
+            endDate,
+            dayOfMonth,
+            dayOfWeek,
           },
         });
       }
@@ -136,16 +141,17 @@ export const incomeRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ input: { id }, ctx }) => {
-      const income = await ctx.prisma.income.findFirstOrThrow({
-        where: {
-          id,
-          userId: ctx.session.user.id,
-        },
-      });
+      const recurringExpense =
+        await ctx.prisma.recurringExpense.findFirstOrThrow({
+          where: {
+            id,
+            userId: ctx.session.user.id,
+          },
+        });
 
-      await ctx.prisma.income.delete({
+      await ctx.prisma.recurringExpense.delete({
         where: {
-          id: income.id,
+          id: recurringExpense.id,
         },
       });
 

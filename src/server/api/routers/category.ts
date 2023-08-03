@@ -4,7 +4,7 @@ import { CategoryType } from '@prisma/client';
 import { createTRPCRouter, protectedProcedure } from '@/server/api/trpc';
 
 export const categoryRouter = createTRPCRouter({
-  getCategoryByType: protectedProcedure.query(({ ctx }) =>
+  get: protectedProcedure.query(({ ctx }) =>
     ctx.prisma.category.findMany({
       where: {
         OR: [
