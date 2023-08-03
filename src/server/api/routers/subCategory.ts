@@ -36,6 +36,27 @@ export const subCategoryRouter = createTRPCRouter({
       })
     ),
 
+  update: protectedProcedure
+    .input(
+      z.object({
+        id: z.string().cuid(),
+        name: z.string(),
+        categoryId: z.string().cuid(),
+      })
+    )
+    .mutation(({ input: { name, categoryId, id }, ctx }) =>
+      ctx.prisma.subCategory.update({
+        where: {
+          id,
+          userId: ctx.session.user.id,
+        },
+        data: {
+          categoryId,
+          name,
+        },
+      })
+    ),
+
   delete: protectedProcedure
     .input(
       z.object({

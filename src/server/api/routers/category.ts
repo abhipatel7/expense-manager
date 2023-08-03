@@ -1,14 +1,10 @@
 import { z } from 'zod';
 
 import { CategoryType } from '@prisma/client';
-import {
-  createTRPCRouter,
-  publicProcedure,
-  protectedProcedure,
-} from '@/server/api/trpc';
+import { createTRPCRouter, protectedProcedure } from '@/server/api/trpc';
 
 export const categoryRouter = createTRPCRouter({
-  getCategoryByType: publicProcedure.query(({ ctx }) =>
+  getCategoryByType: protectedProcedure.query(({ ctx }) =>
     ctx.prisma.category.findMany({
       where: {
         OR: [
@@ -44,6 +40,27 @@ export const categoryRouter = createTRPCRouter({
           name,
           type: categoryType,
           userId: ctx.session.user.id,
+        },
+      })
+    ),
+
+  update: protectedProcedure
+    .input(
+      z.object({
+        id: z.string().cuid(),
+        name: z.string(),
+        categoryType: z.nativeEnum(CategoryType),
+      })
+    )
+    .mutation(({ input: { name, categoryType, id }, ctx }) =>
+      ctx.prisma.category.update({
+        where: {
+          id,
+          userId: ctx.session.user.id,
+        },
+        data: {
+          name,
+          type: categoryType,
         },
       })
     ),
