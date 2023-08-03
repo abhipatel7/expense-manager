@@ -8,6 +8,7 @@ import {
   userAccountRouter,
   recurringExpenseRouter,
   transferRouter,
+  budgetRouter,
 } from '@/server/api/routers';
 
 /**
@@ -16,6 +17,7 @@ import {
  * All routers added in /api/routers should be manually added here.
  */
 export const appRouter = createTRPCRouter({
+  budget: budgetRouter,
   example: exampleRouter,
   category: categoryRouter,
   subCategory: subCategoryRouter,

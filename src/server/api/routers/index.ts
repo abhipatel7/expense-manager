@@ -6,3 +6,4 @@ export * from './income';
 export * from './userAccount';
 export * from './transfer';
 export * from './recurringExpense';
+export * from './budget';
