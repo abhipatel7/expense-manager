@@ -6,6 +6,8 @@ import {
   incomeRouter,
   expenseRouter,
   userAccountRouter,
+  recurringExpenseRouter,
+  transferRouter,
 } from '@/server/api/routers';
 
 /**
@@ -20,6 +22,8 @@ export const appRouter = createTRPCRouter({
   income: incomeRouter,
   expense: expenseRouter,
   userAccount: userAccountRouter,
+  recurringExpense: recurringExpenseRouter,
+  transfer: transferRouter,
 });
 
 // export type definition of API

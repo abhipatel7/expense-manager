@@ -202,10 +202,10 @@ model Expense {
 model Transfer {
     id          String   @id @default(cuid())
     amount      Float
-    note        String
+    note        String?
     createdAt   DateTime @default(now())
     updatedAt   DateTime @updatedAt
-    description String
+    description String?
     attachment  String[]
 
     userId        String
