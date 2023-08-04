@@ -46,6 +46,7 @@ module.exports = {
   rules: {
     '@typescript-eslint/ban-ts-comment': 'off',
     '@typescript-eslint/default-param-last': 'error',
+
     '@typescript-eslint/naming-convention': [
       'warn',
       {
